@@ -1,0 +1,32 @@
+/* ConfigurationSummary.module.css */
+
+.configuration-summary {
+    border: 1px solid #ccc;
+    padding: 20px;
+    margin-top: 20px;
+    background-color: #fff;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  }
+  
+  .configuration-summary h2 {
+    font-size: 1.5rem;
+    margin-bottom: 10px;
+  }
+  
+  .configuration-summary table {
+    width: 100%;
+    border-collapse: collapse;
+  }
+  
+  .configuration-summary th,
+  .configuration-summary td {
+    border: 1px solid #ccc;
+    padding: 8px;
+    text-align: left;
+  }
+  
+  .configuration-summary ul {
+    list-style-type: disc;
+    margin-left: 20px;
+  }
+  
