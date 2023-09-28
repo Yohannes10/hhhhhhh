@@ -9,7 +9,7 @@ import Edit from "./Edit";
 import "../Extra/Navbar.css";
 import Home from "./Home";
 import Help from "../Extra/Help";
-import { Route, BrowserRouter as Router, Routes, Navigate } from "react-router-dom";
+import { Route, BrowserRouter as Router, Routes, navigate } from "react-router-dom";
 import Sidebar from "../Extra/Sidebar";
 import RatingSummary from "../Extra/RatingSummary";
 import EmpGoals from "../Admin/EmpGoals";
@@ -18,6 +18,8 @@ import "./ParentComponent.css";
 import { fetchAllUsers, fetchUserTasks } from "../Admin/fetchUsers";
 import Welcome from "../Authentication/Welcome";
 import { useNavigate } from "react-router-dom";
+import PrivateRoute from "./PrivateRoute";
+
 
 // ParentComponent: Manages user authentication, task handling, and UI rendering
 const ParentComponent = () => {
@@ -29,7 +31,29 @@ const ParentComponent = () => {
   const navigate = useNavigate();
   const [isLoginPage, setIsLoginPage] = useState(true);
 
-
+  const checkAdminStatus = () => {
+    // Retrieve the user's role from wherever you have it (e.g., from the server response)
+    const userRole = localStorage.getItem("userRole"); // Replace with your actual role retrieval logic
+  
+    // Check if the user has admin role
+    if (userRole === "admin") {
+      setIsAdmin(true);
+    }
+  };
+  
+  useEffect(() => {
+    // Function to check if the user is registered
+    const checkRegistrationStatus = () => {
+      const token = localStorage.getItem("token");
+      setIsAdmin(!!token);
+  
+      // Check user's role (call checkAdminStatus here or wherever you have access to role info)
+      checkAdminStatus();
+    };
+  
+    checkRegistrationStatus();
+  }, []);
+  
 
   // asynchronous function that handles the adding of tasks - has one parameter
   const addTask = async (taskContent) => {
@@ -48,7 +72,7 @@ const ParentComponent = () => {
           title: taskContent.title,
           description: taskContent.description,
           date: taskContent.date,
-          departmentalGoal: taskContent.departmentalGoal, 
+          departmentalGoal: taskContent.departmentalGoal,
         }),
       });
       // handle different response status codes
@@ -152,12 +176,17 @@ const ParentComponent = () => {
         // Save the authentication token in local storage
         localStorage.setItem("token", data.token);
 
-        // Update the state to indicate successful login
-        setIsLoggedIn(true);
-        // Print the token for debugging
-        console.log("Token:", data.token);
         // Show a success message to the user
         toast.success("Login successful!");
+
+        // Use the navigate function to redirect to the home page
+        navigate("/");
+
+        // Update the state to indicate successful login (if needed)
+        setIsLoggedIn(true);
+
+        // Print the token for debugging
+        console.log("Token:", data.token);
       } else {
         // If there was an error, parse the error response data
         const errorData = await response.json();
@@ -173,6 +202,8 @@ const ParentComponent = () => {
       toast.error("Error logging in: " + error.message);
     }
   };
+
+
   // Function to toggle between "Login" and "Register" pages
   const toggleLoginPage = () => {
     setIsLoginPage((prevIsLoginPage) => !prevIsLoginPage);
@@ -352,9 +383,10 @@ const ParentComponent = () => {
 
   const showSidebar = () => setSidebar(!sidebar);
 
-    /*  if (!isRegistered) {
-    return <Welcome />;
-  }      */
+  /* if (!isRegistered) {
+  return <Welcome />;
+}      */
+
   return (
     <div>
       {/* Render the toast container */}
@@ -363,6 +395,7 @@ const ParentComponent = () => {
       <div className="container">
         {isLoggedIn ? (
           // Render the main app content when the user is logged in
+
           <>
             <Button
               style={{ position: "absolute", top: "15px", right: "20px" }}
@@ -371,8 +404,34 @@ const ParentComponent = () => {
               Logout
             </Button>
             <Routes>
-              {/* ... Routes for logged-in users ... */}
+              <Route path="/" element={<Home />} />
+              <Route path="/help" element={<Help />} />
+              <Route path="/Addtask" element={<Add addTask={addTask} />} />
+              
+              <Route path="/empgoal" element={<EmpGoals />} />
+              <Route path="/RatingSummary" element={<RatingSummary />} />
+              <Route
+                path="/ShowTask"
+                element={
+                  <div className="task-list-container">
+                    <div className="task-list-inner-container">
+                      <TaskList
+                        tasks={tasks}
+                        handleDeleteTask={handleDeleteTask}
+                        handleEditTask={handleEditTask}
+                        handleToggleTask={handleToggleTask}
+                        toggle={toggle}
+                      />
+                    </div>
+                  </div>
+                }
+              />
+              {/* Render the Team component only for admin users */}
+              console.log(isAdmin)
+              {isAdmin && <Route path="/team" element={<Team />} />}
+
             </Routes>
+
             {editTask && (
               <Edit
                 task={editTask}
@@ -387,7 +446,7 @@ const ParentComponent = () => {
             {isLoginPage ? (
               <Login handleLogin={handleLogin} />
             ) : (
-              <Register handleRegister={handleRegister} navigate={navigate}  />
+              <Register handleRegister={handleRegister} navigate={navigate} />
             )}
             <Button
               style={{ position: "absolute", top: "15px", right: "20px" }}

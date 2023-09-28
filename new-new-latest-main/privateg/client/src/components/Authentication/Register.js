@@ -31,11 +31,11 @@ const Register = ({ handleRegister }) => {
   const navigate = useNavigate();
   const location = useLocation();
   const configData = location.state?.configData || {};
- /*  const provinceOptions = configData?.provinces || [];
-  const branchOptions = configData?.branches || [];
-  const departmentOptions = configData?.departments || [];
-  const hierarchyOptions = configData?.hierarchies || [];
-  const orgObjectiveOptions = configData?.orgObjectives || []; */
+  /*  const provinceOptions = configData?.provinces || [];
+   const branchOptions = configData?.branches || [];
+   const departmentOptions = configData?.departments || [];
+   const hierarchyOptions = configData?.hierarchies || [];
+   const orgObjectiveOptions = configData?.orgObjectives || []; */
   /* const navigateToWelcomePage = () => {
     console.log("Navigating to Welcome page");
     navigate("/welcome"); // Replace "/welcome" with the actual path to your Welcome.js page
@@ -64,33 +64,29 @@ const Register = ({ handleRegister }) => {
     fetchReviewers();
   }, []);
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-
+  const handleSubmit = async () => {
     // Validate input values
-    /* if (!email || !username || !password || !confirmPassword) {
-      toast.error("All fields are required.");
-      return;
-    } */
-
-    if (!username || !password || !confirmPassword) {
+    if (!email || !username || !password || !confirmPassword) {
       toast.error("All fields are required.");
       return;
     }
+  
     if (password !== confirmPassword) {
       toast.error("Passwords do not match.");
       return;
     }
-   /*  if (!email.match(/@gmail\.com$/)) {
+  
+    if (!email.match(/@gmail\.com$/)) {
       toast.error("Only Gmail addresses are allowed.");
       return;
-    } */
-   /*  const passwordStrength = zxcvbn(password);
+    }
+  
+    const passwordStrength = zxcvbn(password);
     if (passwordStrength.score < 3) {
       toast.error("Password is too weak. Please use a stronger password.");
       return;
-    } */
-
+    }
+  
     try {
       await handleRegister(username, password, email, confirmPassword);
       setUsername("");
@@ -100,7 +96,6 @@ const Register = ({ handleRegister }) => {
       toast.success("Registration successful!");
       console.log('Navigating to login...');
       navigate('/login');
-
     } catch (error) {
       toast.error("Failed to register. Please try again.");
     }
@@ -113,8 +108,8 @@ const Register = ({ handleRegister }) => {
   return (
     <div className="container mx-auto h-screen flex flex-col">
 
-       {/* Title */}
-       <div className="title mb-4">
+      {/* Title */}
+      <div className="title mb-4">
         <h4 className="text-5xl font-bold">REGISTER</h4>
         <span className="py-4 text-xl text-center text-gray-500">
           Happy to join you!
@@ -171,7 +166,7 @@ const Register = ({ handleRegister }) => {
                   value={confirmPassword}
                   onChange={(e) => setConfirmPassword(e.target.value)}
                 />
-                   <input
+                <input
                   className={styles.textbox}
                   type="text"
                   placeholder="EMPID"
@@ -185,140 +180,128 @@ const Register = ({ handleRegister }) => {
         <div className={styles.glass} style={{ width: "45%", height: "100%" }}>
           <div className="flex flex-col w-full items-center">
             <div className="textbox flex flex-col items-center gap-2">
-                {/* Dynamic dropdown for Privilege */}
-                <select
-                  className={styles.textbox}
-                  onChange={(e) => setPrivilege(e.target.value)}
-                >
-                  <option value="">Select a Privilege *</option>
-                  {privilegeOptions.map((option) => (
+              {/* Dynamic dropdown for Privilege */}
+              <select
+                className={styles.textbox}
+                onChange={(e) => setPrivilege(e.target.value)}
+              >
+                <option value="">Select a Privilege *</option>
+                {privilegeOptions.map((option) => (
+                  <option key={option} value={option}>
+                    {option}
+                  </option>
+                ))}
+              </select>
+
+              {/* Dynamic dropdown for Province */}
+              <select
+                className={styles.textbox}
+                onChange={(e) => setProvince(e.target.value)}
+              >
+                <option value="">Select a Province *</option>
+                {configData.provinces && configData.provinces.length > 0 ? (
+                  configData.provinces.map((option) => (
                     <option key={option} value={option}>
                       {option}
                     </option>
-                  ))}
-                </select>
+                  ))
+                ) : (
+                  <option value="" disabled>
+                    Loading...
+                  </option>
+                )}
+              </select>
 
-                {/* Dynamic dropdown for Province */}
-                <select
-                  className={styles.textbox}
-                  onChange={(e) => setProvince(e.target.value)}
-                >
-                  <option value="">Select a Province *</option>
-                  {configData.provinces && configData.provinces.length > 0 ? (
-                    configData.provinces.map((option) => (
-                      <option key={option} value={option}>
-                        {option}
-                      </option>
-                    ))
-                  ) : (
-                    <option value="" disabled>
-                      Loading...
+              {/* Dynamic dropdown for Branch */}
+              <select
+                className={styles.textbox}
+                onChange={(e) => setBranch(e.target.value)}
+              >
+                <option value="">Select a Branch *</option>
+                {configData.branches && configData.branches.length > 0 ? (
+                  configData.branches.map((option) => (
+                    <option key={option} value={option}>
+                      {option}
                     </option>
-                  )}
-                </select>
+                  ))
+                ) : (
+                  <option value="" disabled>
+                    Loading...
+                  </option>
+                )}
+              </select>
 
-                {/* Dynamic dropdown for Branch */}
-                <select
-                  className={styles.textbox}
-                  onChange={(e) => setBranch(e.target.value)}
-                >
-                  <option value="">Select a Branch *</option>
-                  {configData.branches && configData.branches.length > 0 ? (
-                    configData.branches.map((option) => (
-                      <option key={option} value={option}>
-                        {option}
-                      </option>
-                    ))
-                  ) : (
-                    <option value="" disabled>
-                      Loading...
+              {/* Dynamic dropdown for Department */}
+              <select
+                className={styles.textbox}
+                onChange={(e) => setDepartment(e.target.value)}
+              >
+                <option value="">Select a Department *</option>
+                {configData.departments && configData.departments.length > 0 ? (
+                  configData.departments.map((option) => (
+                    <option key={option} value={option}>
+                      {option}
                     </option>
-                  )}
-                </select>
-
-                {/* Dynamic dropdown for Department */}
-                <select
-                  className={styles.textbox}
-                  onChange={(e) => setDepartment(e.target.value)}
-                >
-                  <option value="">Select a Department *</option>
-                  {configData.departments && configData.departments.length > 0 ? (
-                    configData.departments.map((option) => (
-                      <option key={option} value={option}>
-                        {option}
-                      </option>
-                    ))
-                  ) : (
-                    <option value="" disabled>
-                      Loading...
+                  ))
+                ) : (
+                  <option value="" disabled>
+                    Loading...
+                  </option>
+                )}
+              </select>
+              <select
+                className={styles.textbox}
+                onChange={(e) => setHierarchy(e.target.value)}
+              >
+                <option value="">Select a Hierarchy *</option>
+                {configData.hierarchies && configData.hierarchies.length > 0 ? (
+                  configData.hierarchies.map((option) => (
+                    <option key={option} value={option}>
+                      {option}
                     </option>
-                  )}
-                </select>
-
-                <select
-                  className={styles.textbox}
-                  onChange={(e) => setHierarchy(e.target.value)}
-                >
-                  <option value="">Select a Hierarchy *</option>
-                  {configData.hierarchies && configData.hierarchies.length > 0 ? (
-                    configData.hierarchies.map((option) => (
-                      <option key={option} value={option}>
-                        {option}
-                      </option>
-                    ))
-                  ) : (
-                    <option value="" disabled>
-                      Loading...
-                    </option>
-                  )}
-                </select>
-
-                {/* Dynamic dropdown for Reviewer */}
-                <select
-                  className={styles.textbox}
-                  onChange={(e) => setReviewer(e.target.value)}
-                >
-                  <option value="">Select Your Reviewer *</option>
-                  {reviewers.map((reviewer) => (
-                    <option key={reviewer} value={reviewer}>
-                      {reviewer}
-                    </option>
-                  ))}
-                </select>
-
-             
+                  ))
+                ) : (
+                  <option value="" disabled>
+                    Loading...
+                  </option>
+                )}
+              </select>
+              {/* Dynamic dropdown for Reviewer */}
+              <select
+                className={styles.textbox}
+                onChange={(e) => setReviewer(e.target.value)}
+              >
+                <option value="">Select Your Reviewer *</option>
+                {reviewers.map((reviewer) => (
+                  <option key={reviewer} value={reviewer}>
+                    {reviewer}
+                  </option>
+                ))}
+              </select>
             </div>
-
-       
           </div>
         </div>
       </div>
-      
+
       {/* Buttons outside of the glasses */}
-       {/* Register Button */}
-       <div className="flex justify-center mt-4">
-                <button
-                  className={styles.btn}
-                  type="submit"
-                  onClick={() => {
-                    console.log('Navigating to login...');
-                    navigate('/login');
-                  }}
-                >
-                  Register
-                </button>
-              </div>
-          {/* Setup System Button */}
-          <div className="flex justify-center mt-4">
-              <button
-                className={styles.btn}
-                type="button"
-                onClick={() => navigate('/welcome')}
-              >
-                Setup System
-              </button>
-            </div>
-      
+      {/* Register Button */}
+      <div className="flex justify-center mt-4">
+  <button className={styles.btn} type="button" onClick={handleSubmit}>
+    Register
+  </button>
+</div>
+
+      {/* Setup System Button */}
+      <div className="flex justify-center mt-4">
+        <button
+          className={styles.btn}
+          type="button"
+          onClick={() => navigate('/')}
+        >
+          Setup System
+        </button>
+      </div>
+
     </div>
   );
 };

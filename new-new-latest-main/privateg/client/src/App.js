@@ -1,26 +1,28 @@
 import React, { useState } from "react";
 import { Route, BrowserRouter as Router, Routes } from "react-router-dom";
+import ParentComponent from "./components/CRUD/ParentComponent"
 import Sidebar from "./components/Extra/Sidebar";
-import ParentComponent from "./components/CRUD/ParentComponent";
+import { Button } from "react-bootstrap";
+import Add from "./components/CRUD/Add";
+import TaskList from "./components/CRUD/TaskList";
 import Home from "./components/CRUD/Home";
-import Welcome from "./components/Authentication/Welcome"; // Import the Welcome component
-import Register from "./components/Authentication/Register";
-import toast, { Toaster } from "react-hot-toast"; // Import react-hot-toast
-import Login from "./components/Authentication/Login";
+import { createPopper, popperGenerator } from '@popperjs/core/dist/esm/createPopper';
+import { detectOverflow as detectOverflowPopper } from '@popperjs/core/dist/esm/utils/detectOverflow.js';
+import Welcome from "./components/Authentication/Welcome";
+
 const App = () => {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [isRegistered, setIsRegistered] = useState(false);
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+
 
   const handleLogout = () => {
     setIsLoggedIn(false);
     localStorage.removeItem("token");
   };
-   // asynchronous function that handles the registration submission - has two parameters
-   const handleRegister = async (username, password, email, confirmPassword) => {
-    if (password !== confirmPassword) {
-      toast.error("Passwords do not match. Please confirm your password.");
-      return;
-    }
+
+  // asynchronous function that handles the registration submission - has two parameters
+  const handleRegister = async (username, password) => {
     try {
       // sends a POST request to the API with the username and password in the body request
       const response = await fetch("http://localhost:8080/users/register", {
@@ -28,16 +30,15 @@ const App = () => {
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ username, password, email }),
+        body: JSON.stringify({ username, password }),
       });
 
       // if the response was OK
       if (response.status === 200) {
         // alert the user
+        alert("User registered successfully.");
         // Update the state to indicate successful registration
         setIsRegistered(true);
-        toast.success("User registered successfully.");
-
         // if the response was a Bad Request
       } else if (response.status === 400) {
         const data = await response.json();
@@ -59,13 +60,14 @@ const App = () => {
       }
     } catch (error) {
       // log the error
-      toast.error("Error during registration: " + error.message);
       console.error("Error during registration:", error.message);
     }
   };
+
+  // asynchronous function that handles the login submission - has two parameters
   const handleLogin = async (username, password) => {
     try {
-      // Send a POST request to the API with the username and password in the request body
+      // sends a POST request to the API with the username and password in the body request
       const response = await fetch("http://localhost:8080/users/login", {
         method: "POST",
         headers: {
@@ -74,67 +76,71 @@ const App = () => {
         body: JSON.stringify({ username, password }),
       });
 
-      // Check if the response was OK (status code 200)
+      // if the response was OK
       if (response.ok) {
-        // Parse the response data
         const data = await response.json();
-        // Save the authentication token in local storage
+        // saves the authentication token in local storage
         localStorage.setItem("token", data.token);
-
-        // Update the state to indicate successful login
+        // sets the logged in state to true -> displays the logged in view
         setIsLoggedIn(true);
-        // Print the token for debugging
-        console.log("Token:", data.token);
-        // Show a success message to the user
-        toast.success("Login successful!");
+        console.log(isLoggedIn)
       } else {
-        // If there was an error, parse the error response data
+        // if there was an error
         const errorData = await response.json();
-        // Log the error
+        // log the error
         console.error("Login failed:", errorData.message);
-        // Show an error message to the user
-        toast.error("Login failed: Invalid username or password");
+        // alert the user
+        alert("Login failed: Invalid username or password");
       }
+      // if there was an error
     } catch (error) {
-      // Log the error
-      console.error("Error logging in:", error.message);
-      // Show an error message to the user
-      toast.error("Error logging in: " + error.message);
+      // log the error
+      console.error("Error logging in:", error);
+      // alert the user
+      alert("Login forbidden: Username has to end with '@gmail.com'.");
     }
+   
   };
+ 
+  const toggleSidebar = () => {
+    setIsSidebarOpen((prevState) => !prevState);
+  };
+
   return (
     <div>
-      <Router>
-        {isLoggedIn && <Sidebar />}
+        <Router>
+        {isLoggedIn && (
+          <Sidebar isSidebarOpen={isSidebarOpen} toggleSidebar={toggleSidebar} />
+        )}
         <div>
-          {isLoggedIn ? (
+          {isLoggedIn && (
             <>
-              <h1></h1>
-              <button
+              <h1>To-Do List App</h1>
+              <Button
                 style={{ position: "absolute", top: "15px", right: "20px" }}
                 onClick={handleLogout}
               >
                 Logout
-              </button>
-              <Routes>
-                <Route path="/" element={<Home />} />
-                <Route path="/register" element={<Register />} />
-{/*                 <Route path="/login" element={<Login />} />
- */}                <Route path="/*" element={<ParentComponent />} />
-              </Routes>
-            </>
-          ) : (
-            // Render the Welcome component when the user is not logged in
-            <>
-              <Routes>
-                <Route path="/" element={<Welcome handleLogin={() => setIsLoggedIn(true)} />} />
-                <Route path="/register" element={<Register handleRegister={handleRegister} />} />
-                <Route path="/login" element={<Login handleLogin={handleLogin} />} />
-              </Routes>
+              </Button>
             </>
           )}
+          {isLoggedIn ? (
+            <Routes>
+              <Route path="/" element={<Home />} />
+              <Route path="/AddTask" element={<Add />} />
+              <Route path="/ShowTask" element={<TaskList />} />
+            </Routes>
+          ) : (
+            <ParentComponent
+              handleLogin={handleLogin}
+              handleRegister={handleRegister}
+              isLoggedIn={isLoggedIn}
+              isRegistered={isRegistered}
+              handleLogout={handleLogout}
+            />
+          )}
         </div>
-      </Router>
+        </Router>
     </div>
   );
 };
