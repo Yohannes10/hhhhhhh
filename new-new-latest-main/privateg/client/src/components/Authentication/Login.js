@@ -4,6 +4,7 @@ import avatar from "./assets/profile.png";
 import toast, { Toaster } from "react-hot-toast";
 import { useFormik } from "formik";
 import styles from "../styles/Username.module.css";
+import jwt_decode from "jwt-decode";
 
 // Login Component
 const Login = ({ handleLogin }) => {
@@ -11,13 +12,23 @@ const Login = ({ handleLogin }) => {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const formik = useFormik({}); // Formik for form management (not fully implemented here)
+// After receiving the token from the server
 
   // Function to handle the form submission
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     // Prevent the default form submission behavior
     e.preventDefault();
+    
     // Call the 'handleLogin' function provided by the parent component, passing the username and password as arguments
-    handleLogin(username, password);
+    const token = await handleLogin(username, password);
+    console.log("Received Token:", token);
+
+    // After receiving the token from the server
+    const decodedToken = jwt_decode(token);
+    const userRole = decodedToken.role;
+    
+    // Now you can use the userRole as needed
+    console.log("User Role:", userRole);
   };
 
   return (

@@ -30,6 +30,8 @@ const ParentComponent = () => {
   const [isAdmin, setIsAdmin] = useState(false);
   const navigate = useNavigate();
   const [isLoginPage, setIsLoginPage] = useState(true);
+  const [pendingDeletions, setPendingDeletions] = useState([]);
+  const [selectedUser, setSelectedUser] = useState(""); // Replace with your selectedUser state
 
   const checkAdminStatus = () => {
     // Retrieve the user's role from wherever you have it (e.g., from the server response)
@@ -175,6 +177,8 @@ const ParentComponent = () => {
         const data = await response.json();
         // Save the authentication token in local storage
         localStorage.setItem("token", data.token);
+        console.log("Token saved to local storage:", data.token); // Add this line
+
 
         // Show a success message to the user
         toast.success("Login successful!");
@@ -256,6 +260,7 @@ const ParentComponent = () => {
 
   // asynchronous function that handles the deletion of a task - has one parameters
   const handleDeleteTask = async (taskId) => {
+    setPendingDeletions([...pendingDeletions, taskId]);
     const toastId = toast((t) => (
       <div>
         <div>Are you sure you want to delete this Goal?</div>
@@ -274,7 +279,7 @@ const ParentComponent = () => {
         </button>
       </div>
     ));
-
+  
     const confirmDelete = async (taskId) => {
       try {
         await fetch(`/tasks/${taskId}`, {
@@ -288,7 +293,17 @@ const ParentComponent = () => {
       }
     };
   };
+  // Function to handle task deletion approval
+  const handleApproveDeletion = (taskId) => {
+    // Implement your logic to approve task deletion and remove it from pendingDeletions
+    // Example:
+    const updatedPendingDeletions = pendingDeletions.filter(
+      (id) => id !== taskId
+    );
+    setPendingDeletions(updatedPendingDeletions);
 
+    // You can also send an API request to the server to handle approval on the backend
+  };
   // function that handles the selceted task to be edited - has one parameter
   const handleEditTask = (taskId) => {
     // searches for the task in the array that maches the given taskId
@@ -415,13 +430,16 @@ const ParentComponent = () => {
                 element={
                   <div className="task-list-container">
                     <div className="task-list-inner-container">
-                      <TaskList
-                        tasks={tasks}
-                        handleDeleteTask={handleDeleteTask}
-                        handleEditTask={handleEditTask}
-                        handleToggleTask={handleToggleTask}
-                        toggle={toggle}
-                      />
+                    <TaskList
+        tasks={tasks}
+        handleDeleteTask={handleDeleteTask}
+        handleEditTask={ handleEditTask}
+        handleToggleTask={ handleToggleTask }
+        selectedUser={selectedUser}
+        isAdmin={isAdmin} // Pass isAdmin as a prop
+        pendingDeletions={pendingDeletions} // Pass pendingDeletions as a prop
+        handleApproveDeletion={handleApproveDeletion} // Pass the handleApproveDeletion function as a prop
+      />
                     </div>
                   </div>
                 }

@@ -51,7 +51,7 @@ exports.login = async (req, res) => {
     }
 
     // JWT token is generated using the user's ID and secret key
-    const token = jwt.sign({ userId: user._id }, "secretKey");
+    const token = jwt.sign({ userId: user._id, role: user.role }, "secretKey");
 
     // send token
     res.json({ token });

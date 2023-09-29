@@ -40,6 +40,8 @@ function EmpGoals() {
     // when the selected user changes.
   }, [selectedUser]);
 
+  const isAdmin = localStorage.getItem("userRole") === "admin";
+
   return (
     <div className="team-container">
       <div className="form-group team-dropdown">
@@ -57,6 +59,7 @@ function EmpGoals() {
           ))}
         </select>
       </div>
+      
       <TaskList tasks={userGoals} /> {/* Pass userGoals as the tasks prop to TaskList */}
     </div>
   );

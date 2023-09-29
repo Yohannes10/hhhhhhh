@@ -10,7 +10,7 @@ const Add = ({ addTask, selectedUser }) => {
   // State to manage input values and selected date
   const [content, setContent] = useState({
     title: "",
-    description: "",
+    frequency: "", // New field for goal measurement frequency
     date: new Date(),
     userSelected: "",
     users: [],
@@ -50,8 +50,8 @@ const Add = ({ addTask, selectedUser }) => {
     /* console.log(e)
     return */
     if (!content.title || content.title.trim() === "") {
-      alert("Please enter a title for the task.");
-      return;
+/*       alert("Please enter a title for the task.");
+ */      return;
     }
     // Call the addTask function passed as a prop to add the goal
     addTask(content);
@@ -101,8 +101,8 @@ const Add = ({ addTask, selectedUser }) => {
   const handleAssignTask = () => {
     // Check if the required fields are filled
     if (!task.title || task.title.trim() === "") {
-      alert("Please enter a title for the task.");
-      return;
+/*       alert("Please enter a title for the task.");
+ */      return;
     }
 
     // Create a task object with user ID and task details
@@ -192,7 +192,7 @@ const Add = ({ addTask, selectedUser }) => {
                   </option>
                 ))}
               </select>
-           {/*    <button
+              {/*    <button
                 type="button"
                 className="btn btn-success ml-2"
                 onClick={handleOpenAddGoalModal}
@@ -226,44 +226,44 @@ const Add = ({ addTask, selectedUser }) => {
               />
             </div>
           </div>
-           {/* Input field for the task title */}
-           <div>
-              <input
-                type="text"
-                className="form-control"
-                placeholder="   What is the quantifiable metric?"
-                name="title"
-               /*  value={content.title}
-                onChange={onChange}
-                required
-                autoFocus */
-              />
-            </div>
+          {/* Input field for the task title */}
+          <div>
+            <input
+              type="text"
+              className="form-control"
+              placeholder="   What is the quantifiable metric?"
+              name="title"
+            /*  value={content.title}
+             onChange={onChange}
+             required
+             autoFocus */
+            />
+          </div>
 
-             {/* Input field for the task title */}
-             <div>
-              <input
-                type="text"
-                className="form-control"
-                placeholder="   How does it align with the organizational objective?"
-                name="title"
-               /*  value={content.title}
-                onChange={onChange}
-                required
-                autoFocus */
-              />
-            </div>
+          {/* Input field for the task title */}
+          <div>
+            <input
+              type="text"
+              className="form-control"
+              placeholder="   How does it align with the organizational objective?"
+              name="title"
+            /*  value={content.title}
+             onChange={onChange}
+             required
+             autoFocus */
+            />
+          </div>
           <div className="form-group">
             {/* DatePicker for selecting a date */}
-            <DatePicker
-  className="form-control"
-  selected={content.date}
-  onChange={onChangeDate}
-  placeholderText="When is the Deadline?" 
-  style={{ width: "150%" }} // Add a style to increase width
-
-/>
-
+            <input
+      type="text"
+      className="form-control"
+      placeholder="How frequently to measure the goal?"
+      name="frequency"
+      value={content.frequency}
+      onChange={onChange}
+      required
+    />
           </div>
           {/* Button to submit the form */}
           <Button
