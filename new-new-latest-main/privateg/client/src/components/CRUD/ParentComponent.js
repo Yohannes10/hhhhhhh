@@ -63,7 +63,7 @@ const ParentComponent = () => {
       // get token
       const token = localStorage.getItem("token");
 
-      // sends POST request to APT with token and task in the request body
+      // sends POST request to API with token and task in the request body
       const response = await fetch("http://localhost:8080/tasks", {
         method: "POST",
         headers: {

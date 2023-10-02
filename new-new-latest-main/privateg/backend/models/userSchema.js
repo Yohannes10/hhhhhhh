@@ -27,7 +27,7 @@ const userSchema = new mongoose.Schema({
   },
    Province: {
     type: String,
-    enum: ["Eastern Cape",  "Free State", "Gauteng", "KwaZulu-Natal", "Limpopo", "Mpumalanga",  "Northern Cape", "North West" ,  "Western Cape"],
+    enum: [],
     default: "Western Cape",
   },
 

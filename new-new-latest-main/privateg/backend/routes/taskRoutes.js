@@ -43,8 +43,6 @@ router.get("/:userId/goals", authenticateUserMiddleware, taskController.getGoals
 router.post("/ratings", authenticateUserMiddleware, jsonContentTypeMiddleware, taskController.addRating);
   
 
-// allow admins to assign a new task to an existing user, 
-router.post('/assign-new-task',authenticateUserMiddleware, taskController.assignTaskToUser);
 
 // export the router
 module.exports = router;

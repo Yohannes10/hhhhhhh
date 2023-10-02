@@ -2,6 +2,7 @@ const express = require("express");
 const router = express.Router();
 const userController = require("../controllers/userController");
 const configController = require("../controllers/configController"); // Import the configController
+const taskController = require("../controllers/taskController");
 
 const {
   authenticateUserMiddleware, // Add authentication middleware as needed
@@ -29,4 +30,6 @@ router.post("/configurations", configController.saveConfiguration);
 // GET request to fetch configuration data
 router.get("/configurations", configController.getConfiguration);
 
+// allow admins to assign a new task to an existing user, 
+router.post('/assign-new-task',authenticateUserMiddleware, taskController.assignTaskToUser);
 module.exports = router;
