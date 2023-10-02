@@ -431,15 +431,12 @@ const ParentComponent = () => {
                   <div className="task-list-container">
                     <div className="task-list-inner-container">
                     <TaskList
-        tasks={tasks}
-        handleDeleteTask={handleDeleteTask}
-        handleEditTask={ handleEditTask}
-        handleToggleTask={ handleToggleTask }
-        selectedUser={selectedUser}
-        isAdmin={isAdmin} // Pass isAdmin as a prop
-        pendingDeletions={pendingDeletions} // Pass pendingDeletions as a prop
-        handleApproveDeletion={handleApproveDeletion} // Pass the handleApproveDeletion function as a prop
-      />
+                        tasks={tasks}
+                        handleDeleteTask={handleDeleteTask}
+                        handleEditTask={handleEditTask}
+                        handleToggleTask={handleToggleTask}
+                        toggle={toggle}
+                      />
                     </div>
                   </div>
                 }
