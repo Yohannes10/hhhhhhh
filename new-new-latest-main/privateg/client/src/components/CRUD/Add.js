@@ -6,6 +6,8 @@ import Table from "../Extra/Table/Table";
 
 // Add Component: Allows users to create goals with specified details
 const Add = ({ addTask, selectedUser }) => {
+  console.log("Selected User ID in Add:", selectedUser);
+
   console.log(selectedUser);
   // State to manage input values and selected date
   const [content, setContent] = useState({
@@ -128,10 +130,10 @@ const Add = ({ addTask, selectedUser }) => {
   // Function to assign the task to the selected user
   const assignTaskToUser = async (task) => {
     try {
-      const token = localStorage.getItem("token"); // Assuming you have a token for authentication
-
+      const token = localStorage.getItem("token");
+      console.log("Sending task assignment request:", task);
       const response = await fetch(
-        "http://localhost:8080/tasks/assign-new-task",
+        "http://localhost:8080/assign-task-to-user", // Replace with your actual endpoint
         {
           method: "POST",
           headers: {
@@ -141,21 +143,23 @@ const Add = ({ addTask, selectedUser }) => {
           body: JSON.stringify({ userId: task.userId, task }),
         }
       );
-
+  
       if (response.ok) {
-        // Task assigned successfully
-        console.log("Task assigned to user:", task);
-        // You may add additional logic here to handle success, e.g., show a success message to the user.
+        const data = await response.json();
+        console.log("Task assigned successfully:", data);
+        console.log("Sending task assignment request:", task);
+
+        // You may add logic to update your local state here.
       } else {
-        // Handle the case where the task assignment fails
         console.error("Failed to assign task:", response.statusText);
-        // You can display an error message to the user.
+        // Handle error cases here.
       }
     } catch (error) {
       console.error("Error assigning task:", error);
-      // You can display an error message to the user.
+      // Handle error cases here.
     }
   };
+  
 
   return (
     <div className="col-md-6 offset-md-3">

@@ -11,15 +11,16 @@ import axios from "axios";
 import toast from "react-hot-toast";
 
 const TaskList = ({
-  tasks,
+  allUserTasks, // Pass all tasks for the selected user
   handleDeleteTask,
   handleEditTask,
   handleToggleTask,
-  selectedUser, // Add selectedUser as a prop
+  selectedUser,
 }) => {
+  const userTasks = allUserTasks.filter((task) => task.userId === selectedUser);
   const [ratings, setRatings] = useState({});
   const [tableVisibility, setTableVisibility] = useState(
-    Array(tasks.length).fill(false)
+    Array(allUserTasks.length).fill(false) // Update to use allUserTasks.length
   );
 
   const handleRatingChange = async (taskId, rating) => {
@@ -62,99 +63,96 @@ const TaskList = ({
   };
 
   useEffect(() => {
-    console.log("Tasks Prop Updated in TaskList:", tasks);
-  }, [tasks]);
+    console.log("Tasks Prop Updated in TaskList:", allUserTasks);
+  }, [allUserTasks]);
 
   return (
     <div data-testid="task-list-container">
       <div className="row">
         <div className="row justify-content-center align-items-center">
-          {tasks &&
-            tasks
-              .filter((task) => task.userId === selectedUser) // Filter tasks based on selectedUser
-              .map((task, index) => (
-                <div className="col-md-4 p-2 my-2" key={task._id}>
-                  <div className="card rounded-0">
-                    <div className="card-header d-flex justify-content-between align-items-center">
-                      <h5>{task.title}</h5>
-                      <Button
-                        onClick={() => handleEditTask(task._id)}
-                        className="btn btn-sm"
-                      >
-                        Edit
-                      </Button>
-                    </div>
-                    <div className="card-body">
-                      <Form.Check
-                        type="checkbox"
-                        checked={task.completed}
-                        onChange={() =>
-                          handleToggleTask(task._id, {
-                            completed: !task.completed,
-                          })
-                        }
+          {allUserTasks.map((task, index) => (
+            <div className="col-md-4 p-2 my-2" key={task._id}>
+              <div className="card rounded-0">
+                <div className="card-header d-flex justify-content-between align-items-center">
+                  <h5>{task.title}</h5>
+                  <Button
+                    onClick={() => handleEditTask(task._id)}
+                    className="btn btn-sm"
+                  >
+                    Edit
+                  </Button>
+                </div>
+                <div className="card-body">
+                  <Form.Check
+                    type="checkbox"
+                    checked={task.completed}
+                    onChange={() =>
+                      handleToggleTask(task._id, {
+                        completed: !task.completed,
+                      })
+                    }
+                    style={{
+                      border: "2px solid #007bff",
+                      boxShadow: "0 1px 3px rgba(0, 0, 0, 0.2)",
+                      borderRadius: "px",
+                      padding: "4px",
+                      width: "25px",
+                    }}
+                  />
+                  <p>Description: {task.description}</p>
+                  <p>
+                    Date:{" "}
+                    {new Date(task.date).toLocaleDateString("en-US", {
+                      year: "numeric",
+                      month: "long",
+                      day: "numeric",
+                    })}
+                  </p>
+                  <div className="d-flex flex-column align-items-center">
+                    <label className="mb-2">
+                      Please Rate Your Performance
+                      <FontAwesomeIcon
+                        icon={faInfoCircle}
                         style={{
-                          border: "2px solid #007bff",
-                          boxShadow: "0 1px 3px rgba(0, 0, 0, 0.2)",
-                          borderRadius: "px",
-                          padding: "4px",
-                          width: "25px",
+                          fontSize: "24px",
+                          marginLeft: "8px",
+                          cursor: "pointer",
                         }}
+                        onClick={() => toggleTable(index)}
                       />
-                      <p>Description: {task.description}</p>
-                      <p>
-                        Date:{" "}
-                        {new Date(task.date).toLocaleDateString("en-US", {
-                          year: "numeric",
-                          month: "long",
-                          day: "numeric",
-                        })}
-                      </p>
-                      <div className="d-flex flex-column align-items-center">
-                        <label className="mb-2">
-                          Please Rate Your Performance
-                          <FontAwesomeIcon
-                            icon={faInfoCircle}
-                            style={{
-                              fontSize: "24px",
-                              marginLeft: "8px",
-                              cursor: "pointer",
-                            }}
-                            onClick={() => toggleTable(index)}
-                          />
-                        </label>
-                        <Rating
-                          count={5}
-                          size={24}
-                          value={ratings[task._id] || 0}
-                          onChange={(newRating) =>
-                            handleRatingChange(task._id, newRating)
-                          }
-                          half={false}
-                        />
-                      </div>
-                      <div
-                        className={`tooltip ${
-                          tableVisibility[index] ? "show" : ""
-                        }`}
-                      >
-                        {/* Your table content goes here */}
-                        <div className="tooltip-content">
-                          <Table />
-                        </div>
-                      </div>
-                      <div className="d-flex justify-content-between align-items-center">
-                        <Button
-                          onClick={() => handleDeleteTask(task._id)}
-                          className="btn btn-sm delete-button"
-                        >
-                          Delete
-                        </Button>
-                      </div>
+                    </label>
+                    <Rating
+                      count={5}
+                      size={24}
+                      value={ratings[task._id] || 0}
+                      onChange={(newRating) =>
+                        handleRatingChange(task._id, newRating)
+                      }
+                      half={false}
+                    />
+                  </div>
+                  <div
+                    className={`tooltip ${
+                      tableVisibility[index] ? "show" : ""
+                    }`}
+                  >
+                    {/* Your table content goes here */}
+                    <div className="tooltip-content">
+                      <Table />
                     </div>
                   </div>
+                  <div className="d-flex justify-content-between align-items-center">
+                    <Button
+                      onClick={() => handleDeleteTask(task._id)}
+                      className="btn btn-sm delete-button"
+                    >
+                      Delete
+                    </Button>
+                  </div>
                 </div>
-              ))}
+              </div>
+            </div>
+          ))}
         </div>
       </div>
     </div>

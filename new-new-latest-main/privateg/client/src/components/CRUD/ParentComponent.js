@@ -32,7 +32,15 @@ const ParentComponent = () => {
   const [isLoginPage, setIsLoginPage] = useState(true);
   const [pendingDeletions, setPendingDeletions] = useState([]);
   const [selectedUser, setSelectedUser] = useState(""); // Replace with your selectedUser state
-
+   // Define content and setContent in the ParentComponent
+  const [content, setContent] = useState({
+    title: "",
+    frequency: "", // New field for goal measurement frequency
+    date: new Date(),
+    userSelected: "",
+    users: [],
+    _id: "",
+  });
   const checkAdminStatus = () => {
     // Retrieve the user's role from wherever you have it (e.g., from the server response)
     const userRole = localStorage.getItem("userRole"); // Replace with your actual role retrieval logic
@@ -44,17 +52,21 @@ const ParentComponent = () => {
   };
   
   useEffect(() => {
-    // Function to check if the user is registered
-    const checkRegistrationStatus = () => {
-      const token = localStorage.getItem("token");
-      setIsAdmin(!!token);
-  
-      // Check user's role (call checkAdminStatus here or wherever you have access to role info)
-      checkAdminStatus();
+    const fetchUserTasks = async () => {
+      try {
+        const token = localStorage.getItem("token");
+        const userTasks = await fetchUserTasks(selectedUser, token); // Implement this function to fetch user tasks
+        setTasks(userTasks);
+      } catch (error) {
+        console.error("Error fetching user tasks:", error);
+      }
     };
   
-    checkRegistrationStatus();
-  }, []);
+    // Call the fetchUserTasks function when selectedUser changes
+    if (selectedUser) {
+      fetchUserTasks();
+    }
+  }, [selectedUser]);
   
 
   // asynchronous function that handles the adding of tasks - has one parameter
@@ -190,8 +202,8 @@ const ParentComponent = () => {
         setIsLoggedIn(true);
 
         // Print the token for debugging
-        console.log("Token:", data.token);
-      } else {
+/*         console.log("Token:", data.token);
+ */      } else {
         // If there was an error, parse the error response data
         const errorData = await response.json();
         // Log the error
@@ -218,8 +230,8 @@ const ParentComponent = () => {
     const checkRegistrationStatus = () => {
       // retrieves the token value
       const token = localStorage.getItem("token");
-      console.log("Token:", token);
-      // shorthand way of of converting the token value to a boolean
+/*       console.log("Token:", token);
+ */      // shorthand way of of converting the token value to a boolean
       // if the token is true (not empty) the status is evaluated to true and vice versa
       setIsAdmin(!!token);
     };
@@ -421,7 +433,7 @@ const ParentComponent = () => {
             <Routes>
               <Route path="/" element={<Home />} />
               <Route path="/help" element={<Help />} />
-              <Route path="/Addtask" element={<Add addTask={addTask} />} />
+              <Route path="/Addtask" element={<Add addTask={addTask} content={content} setContent={setContent}/>} />
               
               <Route path="/empgoal" element={<EmpGoals />} />
               <Route path="/RatingSummary" element={<RatingSummary />} />
@@ -431,8 +443,9 @@ const ParentComponent = () => {
                   <div className="task-list-container">
                     <div className="task-list-inner-container">
                     <TaskList
-                        tasks={tasks}
-                        handleDeleteTask={handleDeleteTask}
+                      allUserTasks={tasks}
+/*                         tasks={tasks}
+ */                       handleDeleteTask={handleDeleteTask}
                         handleEditTask={handleEditTask}
                         handleToggleTask={handleToggleTask}
                         toggle={toggle}
@@ -443,8 +456,7 @@ const ParentComponent = () => {
               />
               {/* Render the Team component only for admin users */}
               console.log(isAdmin)
-              {isAdmin && <Route path="/team" element={<Team />} />}
-
+              {isAdmin && <Route path="/team" element={<Team selectedUser={selectedUser}/>} />}
             </Routes>
 
             {editTask && (

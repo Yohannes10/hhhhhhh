@@ -217,23 +217,18 @@ exports.assignTaskToUser = async (req, res) => {
     }
 
     const { userId, task } = req.body;
+    console.log("User ID from Request:", userId); // Debugging statement
 
     // Check if the user exists
     const user = await User.findById(userId);
+    console.log("User Found:", user); // Debugging statement
 
     if (!user) {
       return res.status(404).json({ message: "User not found" });
     }
 
-    // Create a new task with the provided details
-    const newTask = new Task(task);
-
-    // Save the new task to the database
-    await newTask.save();
-
-    // Assign the new task to the user
-    user.tasks.push(newTask);
-    await user.save();
+    // Rest of your code
+    // ...
 
     res.status(201).json({ message: "New task assigned to user successfully", task: newTask });
   } catch (err) {
