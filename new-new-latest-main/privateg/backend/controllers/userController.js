@@ -1,10 +1,76 @@
+const express = require('express');
+const router = express.Router();
 const User = require("../models/userSchema");
 const jwt = require("jsonwebtoken");
 const Task = require("../models/taskSchema");
-const Department = require("../models/departmentModel"); // Import the Department model
+const Department = require("../models/departmentModel");
+const xl = require('excel4node'); // Import the excel4node library
+const fs = require('fs');
+
+const { authenticateUserMiddleware } = require("../middleware/middleware"); // Import authenticateUserMiddleware
+
 
  
+// Route to export user data to Excel
+router.get("/download-user-data", authenticateUserMiddleware, async (req, res) => {
+  try {
+    // Ensure that only users with certain privileges can download user data
+    // Modify this condition as needed
+    if (req.user.privilege !== 'admin') {
+      return res.status(403).json({ message: "You are not authorized to download user data" });
+    }
 
+    // Fetch user data from your MongoDB database
+    const userData = await User.find({}, { _id: 0, username: 1, email: 1 }); // Modify this query as needed
+
+    if (!userData || userData.length === 0) {
+      return res.status(404).json({ message: "No user data found" });
+    }
+
+    // Create a new Excel workbook and worksheet
+    const wb = new xl.Workbook();
+    const ws = wb.addWorksheet('User Data');
+
+    // Define the columns for the Excel sheet
+    const style = wb.createStyle({
+      font: {
+        color: '#000000',
+        size: 12,
+      },
+    });
+
+    ws.cell(1, 1).string('Username').style(style);
+    ws.cell(1, 2).string('Email').style(style);
+    // Add more columns as needed
+
+    // Populate the worksheet with user data
+    userData.forEach((user, index) => {
+      ws.cell(index + 2, 1).string(user.username).style(style);
+      ws.cell(index + 2, 2).string(user.email).style(style);
+      // Add more columns as needed
+    });
+
+    // Generate a unique filename for the Excel file
+    const filename = `user_data_${Date.now()}.xls`;
+
+    // Save the Excel file to a temporary location on the server
+    wb.write(filename, (err) => {
+      if (err) {
+        console.error(err);
+        return res.status(500).json({ message: 'Error exporting user data to Excel' });
+      }
+
+      // Send the Excel file as a response to the client for download
+      res.download(filename, () => {
+        // Delete the temporary Excel file from the server after download
+        fs.unlinkSync(filename);
+      });
+    });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: 'Error exporting user data to Excel' });
+  }
+});
 
 // Register a user
 exports.register = async (req, res) => {

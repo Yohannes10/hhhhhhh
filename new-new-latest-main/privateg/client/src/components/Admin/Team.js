@@ -40,6 +40,24 @@ function Team({
     setSelectedUser(selectedUserId);
   };
 
+  const handleDownloadUserData = () => {
+    // Make a GET request to the backend route to initiate the download
+    fetch('/download-user-data')
+      .then((response) => response.blob())
+      .then((blob) => {
+        // Create a download link for the Excel file
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = 'user_data.xlsx';
+        document.body.appendChild(a);
+        a.click();
+        window.URL.revokeObjectURL(url);
+      })
+      .catch((error) => console.error(error));
+  };
+  
+
   return (
     <div className="team-container">
       <div className="form-group team-dropdown">
@@ -57,6 +75,10 @@ function Team({
           ))}
         </select>
       </div>
+       {/* Add the download button */}
+       <button onClick={handleDownloadUserData} className="btn btn-primary">
+        Download User Data
+      </button>
       {/* Pass the selectedUser and addTaskToAllUserTasks as props to the Add component */}
       <Add addTask={addTaskToAllUserTasks} selectedUser={selectedUser} />
     </div>
